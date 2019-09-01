@@ -35,16 +35,16 @@ body {
 .ag-row {
     border-bottom: 1px solid lightgrey;
 }
-.ag-row-level-0 {
+.ag-row-level-3 {
     background-color: #fff !important;
 }
-.ag-row-level-1 {
+.ag-row-level-2 {
     background-color: #eee !important;
 }
-.ag-row-level-2 {
+.ag-row-level-1 {
     background-color: #ddd !important;
 }
-.ag-row-level-3 {
+.ag-row-level-0 {
     background-color: #ccc !important;
 }
 
