@@ -8,35 +8,39 @@ var columnDefs = [
       hide: true,
     },
     {
-      headerName: "Exp",
-      field: 'exp',
-      filter: 'agSetColumnFilter',
-      width: 600,
-      rowGroup:true,
-      hide: true,
-    },
-    {
       headerName: "Symbol",
       field: 'symbol',
       filter: 'agSetColumnFilter',
       width: 600,
       rowGroup:true,
       hide: true,
+      sort: 'asc',
+    },
+    {
+      headerName: "Exp",
+      field: 'exp',
+      // valueFormatter: dateFormatter,
+      filter: 'agSetColumnFilter',
+      width: 600,
+      rowGroup:true,
+      hide: true,
+      sort: 'asc',
     },
     {
       headerName: "Name",
       field: 'name',
       filter: 'agSetColumnFilter',
-      width: 600,
+      width: 500,
     },
-    // {headerName: "Security Type", field: "Security Type", width: 350},
-    {headerName: "Position", field: "Position Type", width: 350},
-    {headerName: "Price", field: "price", filter: 'agNumberColumnFilter', width: 350},
+    { headerName: "Security Type", field: "Security Type", width: 350, hide: true },
+    { headerName: "Position", field: "Position Type", width: 350, hide: true },
+    { headerName: "Price", field: "price", filter: 'agNumberColumnFilter', width: 350, hide: true},
     {
       headerName: "Strike",
       field: 'strike',
+      valueFormatter: moneyFormatter,
       filter: 'agNumberColumnFilter',
-      width: 600,
+      width: 200,
       // aggFunc: 'avg',
       // enableValue: true,
       // allowedAggFuncs: ['avg'],
@@ -44,8 +48,9 @@ var columnDefs = [
     {
       headerName: "Quantity",
       field: 'quantity',
+      valueFormatter: numberFormatter,
       filter: 'agNumberColumnFilter',
-      width: 600,
+      width: 200,
       // aggFunc: 'sum',
       // enableValue: true,
       // allowedAggFuncs: ['sum', 'avg'],
@@ -53,8 +58,9 @@ var columnDefs = [
     {
       headerName: "Notional Value",
       field: 'notionalValue',
+      valueFormatter: moneyFormatter,
       filter: 'agNumberColumnFilter',
-      width: 600,
+      width: 400,
       aggFunc: 'sum',
       enableValue: true,
       allowedAggFuncs: ['sum', 'avg'],
@@ -116,7 +122,28 @@ var gridOptions = {
     autoGroupColumnDef: {
       width: 400,
     },
+    // defaultGroupSortComparator: function(nodeA, nodeB) {
+    //     if (nodeA.key < nodeB.key) {
+    //         return -1;
+    //     } else if (nodeA.key > nodeB.key) {
+    //         return 1;
+    //     } else {
+    //         return 0;
+    //     }
+    // }
 };
+
+function dateFormatter(params) {
+  return params.value && new Date(params.value).toLocaleDateString('en-US');
+}
+
+function numberFormatter(params) {
+  return params.value && params.value.toLocaleString('en-US');
+}
+
+function moneyFormatter(params) {
+  return params.value && params.value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
 
 function handleFile(target) {
   var files = target.files;
@@ -125,8 +152,22 @@ function handleFile(target) {
   reader.readAsText(file);
   reader.onload = function(event) {
     var csv = event.target.result.split("Symbol/")[1];
-    var rowData = $.csv.toObjects(csv).map(reformat);
+    var rowData = $.csv.toObjects(csv)
+      .map(reformat)
+      .sort((a, b) => {
+        const [ amonth, aday, ayear ] = a.exp.split('/');
+        aexp = [ ayear, amonth, aday ].join('/');
+        const [ bmonth, bday, byear ] = b.exp.split('/');
+        bexp = [ byear, bmonth, bday ].join('/');
+        if (a.symbol > b.symbol) return 1;
+        else if (a.symbol < b.symbol) return -1;
+        else if (aexp > bexp) return 1;
+        else if (aexp < bexp) return -1;
+        return 0;
+      });
+    console.log(rowData)
     gridOptions.api.setRowData(rowData);
+    // gridOptions.api.expandAll();
   }
 }
 
@@ -140,7 +181,7 @@ function reformat(transaction) {
   transaction.name = transaction['Name'].split(' $')[0].split(' ').splice(1).join(' ');
   transaction.exp = transaction['Name'].split('EXP ')[1];
   transaction.price = Number(transaction['Price'].split('$')[1]);
-  transaction.strike = Number(transaction['Name'].split(' EXP ')[0].split('$')[1]);
+  transaction.strike = Math.abs(Number(transaction['Name'].split(' EXP ')[0].split('$')[1]));
   transaction.quantity = Number(transaction['Quantity'].replace(/[\(\)\,]/g,''));
   transaction.notionalValue = transaction.strike * transaction.quantity * 100;
   return transaction;
