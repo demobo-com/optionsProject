@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href=".//src/styles.css">
+  <script src="https://unpkg.com/ag-grid-enterprise@21.2.0/dist/ag-grid-enterprise.min.js"></script>
+  <script src="http://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>
+  <script src="./src/jquery.csv.js"></script>
+  <script src="./src/main.js"></script>
+</head>
+
+<body onresize="handleResize()">
+  <div style="padding-bottom: 5px">
+    <input type="file" id="files" name="files[]" onchange="handleFile(this)" accept=".csv" />
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
+    <button onclick="exportFile()">Export to Excel</button>
+  </div>
+  <div id="myGrid" style="height: calc(100% - 25px); width:100%;" class="ag-theme-balham"></div>
+
+</body>
+
+</html>
