@@ -48,9 +48,19 @@ body {
     background-color: #ccc !important;
 }
 
-.ag-row-footer {
-  background-color: #cfc !important;
+
+.ag-row-level-0.ag-row-footer {
+  background-color: rgba(160, 255, 200, 0.2) !important;
 }
+
+.ag-row-level-1.ag-row-footer {
+  background-color: rgba(160, 255, 200, 0.6) !important;
+}
+
+.ag-row-level-2.ag-row-footer {
+  background-color: rgba(160, 255, 200, 1) !important;
+}
+
 .legend-item {
     display: inline-block;
     width: 20px;
