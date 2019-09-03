@@ -1,3 +1,5 @@
+console.error = () => {};
+
 var columnDefs = [
     {
       headerName: "Type",

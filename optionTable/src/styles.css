@@ -72,3 +72,6 @@ body {
     top: -5px;
     margin-right: 20px;
 }
+.ag-watermark {
+  display: none;
+}
